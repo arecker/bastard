@@ -23,7 +23,7 @@ Overwrites DEST if already linking to another file."
 	 (info "~A already exists, deleting" dest)
 	 (delete-file dest))
 	((not (probe-file dest))
-	 (info "creating hardlink from ~A to ~A")
+	 (info "creating hardlink from ~A to ~A" dest src)
 	 (sb-posix:link src dest))
 	(t (info "~A already hardlinked to ~A" dest src))))
 

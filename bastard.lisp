@@ -11,8 +11,8 @@
 (defun already-hardlinked (src dest)
   "Returns T if pathspec SRC and DEST are already hardlinked to one
 another."
-  (and (equal (sb-posix:stat-ino (sb-posix:stat src))
-	      (sb-posix:stat-ino (sb-posix:stat dest)))))
+  (equal (sb-posix:stat-ino (sb-posix:stat src))
+	 (sb-posix:stat-ino (sb-posix:stat dest))))
 
 (defun hardlink (src dest)
   "Creates a hardlink from pathspec SRC to DEST.  

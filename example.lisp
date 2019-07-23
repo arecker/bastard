@@ -5,3 +5,4 @@
 (bastard:hardlink "~/src/bastard/configs/gemrc" "~/.gemrc")
 (bastard:hardlink "~/src/bastard/configs/gitconfig" "~/.gitconfig")
 (bastard:hardlink "~/src/bastard/configs/gitconfig-work" "~/.gitconfig-work")
+(bastard:hardlink "~/src/bastard/configs/ssh_config" "~/.ssh/config")

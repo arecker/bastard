@@ -1,0 +1,5 @@
+Include work/config
+
+Host *
+  ForwardAgent yes
+  StrictHostKeyChecking no

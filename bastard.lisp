@@ -2,6 +2,8 @@
   (:use :cl)
   (:export :hardlink))
 
+(require :sb-posix)
+
 (in-package :bastard)
 
 (defun abs-path-to-relative (path)

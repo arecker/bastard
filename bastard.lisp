@@ -9,19 +9,22 @@
 (defun abs-path-to-relative (path)
   "Turn an absolute path into a path relative to the home dir.
 If not under the home dir, just returns the path."
-  (let ((result (enough-namestring path (user-homedir-pathname))))
+  (let* ((path (truename (pathname path)))
+	 (result (enough-namestring path (user-homedir-pathname))))
     (if (string= result "~" :end1 1 :end2 1) result
 	(concatenate 'string "~/" result))))
 
-(defun report-hardlink (src dest action &optional error-msg)
-  "Report a hardlink.  Print soruce, destination, action, and error if
-it occured."
-  (let ((symbol (cond ((equal action :up-to-date) "✓")
-		      ((equal action :changed) "⚡")
-		      ((equal action :error) "✗"))))
-    (format t "[~A] HL: ~A -> ~A~%" symbol (abs-path-to-relative src) (abs-path-to-relative dest))
-    (when error-msg
-      (format t "     E: ~A~%" error-msg))))
+(defun glyph-action (action)
+  (let ((lookup '((:up-to-date "✓")
+		  (:changed "⚡")
+		  (:error "✗"))))
+    (first (cdr (assoc action lookup)))))
+
+(defun report (symbol action info-msg &optional error-msg)
+  "Report a state result."
+  (format t "[~A] ~A: ~A~%" (glyph-action action) symbol info-msg)
+  (when error-msg
+    (format t "     E: ~A~%" error-msg)))
 
 (defun already-hardlinked (src dest)
   "Returns T if pathspec SRC and DEST are already hardlinked to one
@@ -32,17 +35,19 @@ another."
 (defun hardlink (src dest)
   "Creates a hardlink from pathspec SRC to DEST.  
 Overwrites DEST if already linking to another file."
-  (let ((src (pathname src))
-	(dest (pathname dest)))
+  (let* ((src (pathname src))
+	 (dest (pathname dest))
+	 (info-msg (format nil "~A -> ~A" (abs-path-to-relative src) (abs-path-to-relative dest)))
+	 (symbol "HL"))
     (cond ((not (probe-file src))
-	   (let ((msg (format nil "~A does not exist" (abs-path-to-relative src))))
-	     (report-hardlink src dest :error msg)))
+	   (let ((error-msg (format nil "~A does not exist" (abs-path-to-relative src))))
+	     (report symbol :error info-msg error-msg)))
 	  ((and (probe-file dest) (not (already-hardlinked src dest)))
 	   (delete-file dest)
 	   (sb-posix:link src dest)
-	   (report-hardlink src dest :changed))
+	   (report symbol :changed info-msg))
 	  ((not (probe-file dest))
 	   (sb-posix:link src dest)
-	   (report-hardlink src dest :changed))
-	  (t (report-hardlink src dest :up-to-date)))))
+	   (report symbol :changed info-msg))
+	  (t (report symbol :up-to-date info-msg)))))
 

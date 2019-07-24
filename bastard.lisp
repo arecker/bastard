@@ -10,7 +10,7 @@
 (defun abs-path-to-relative (path)
   "Turn an absolute path into a path relative to the home dir.
 If not under the home dir, just returns the path."
-  (let* ((path (truename (pathname path)))
+  (let* ((path  (pathname path))
 	 (result (enough-namestring path (user-homedir-pathname))))
     (if (string= result "~" :end1 1 :end2 1) result
 	(concatenate 'string "~/" result))))

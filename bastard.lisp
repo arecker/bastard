@@ -7,13 +7,16 @@
 
 (in-package :bastard)
 
-(defun abs-path-to-relative (path)
-  "Turn an absolute path into a path relative to the home dir.
-If not under the home dir, just returns the path."
-  (let* ((path  (pathname path))
-	 (result (enough-namestring path (user-homedir-pathname))))
-    (if (string= result "~" :end1 1 :end2 1) result
-	(concatenate 'string "~/" result))))
+(defparameter *real-exits* nil "Set to T to actually exit the program")
+
+(defun exit (&optional (code 0))
+  "Exit, only if *real-exits* is T."
+  (when *real-exits*
+    (sb-ext:exit :code code)))
+
+(defun abspath (pathname)
+  "Make relative path absolute."
+  (merge-pathnames pathname))
 
 (defun glyph-action (action)
   "Return a coresponding glyph symbol for an action."
@@ -44,12 +47,12 @@ another."
 (defun hardlink (src dest)
   "Creates a hardlink from pathspec SRC to DEST.  
 Overwrites DEST if already linking to another file."
-  (let* ((src (pathname src))
-	 (dest (pathname dest))
-	 (info-msg (format nil "~A -> ~A" (abs-path-to-relative src) (abs-path-to-relative dest)))
+  (let* ((src (abspath src))
+	 (dest (abspath dest))
+	 (info-msg (format nil "~A -> ~A"  src dest))
 	 (symbol "HL"))
     (cond ((not (probe-file src))
-	   (let ((error-msg (format nil "~A does not exist" (abs-path-to-relative src))))
+	   (let ((error-msg (format nil "~A does not exist" src)))
 	     (report symbol :error info-msg error-msg)))
 	  ((and (probe-file dest) (not (hardlinked-p src dest)))
 	   (delete-file dest)
@@ -70,17 +73,22 @@ Overwrites DEST if already linking to another file."
   (dolist (form (collect-forms filename))
     (eval form)))
 
-(defun main ()
+(defun filename-from-args (&optional (args sb-ext:*posix-argv*))
+  "Parse filename from args."
+  (unless (= (length args) 2)
+    (format t "Usage: bastard <path/to/config.lisp>~%")
+    (exit 1))
+  (nth 1 args))
+
+(defun main (&optional filename)
   "Run the bastard program.
 Expects an argument to a file containing bastard lisp."
-  (unless (= (length sb-ext:*posix-argv*) 2)
-    (format t "Usage: bastard <path/to/config.lisp>~%")
-    (sb-ext:exit :code 1))
-  (let ((filename (pathname (nth 1 sb-ext:*posix-argv*))))
-    (handler-case (progn
-		    (execute-file filename)
-		    (sb-ext:exit :code 0))
-      (error (e)
-	(format t "Error: ~A~%" e)
-	(sb-ext:exit :code 1)))))
-  
+  (handler-case (let* ((filename (abspath (or filename (filename-from-args))))
+		       (directory (pathname (directory-namestring filename)))
+		       (*default-pathname-defaults* directory))
+		  (execute-file filename)
+		  (exit 0))
+    (error (e)
+      (format t "Error: ~A~%" e)
+      (exit 1))))
+

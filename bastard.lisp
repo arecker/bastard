@@ -1,6 +1,6 @@
 (defpackage bastard
   (:use :cl)
-  (:export :main :join :each :hardlink :symlink))
+  (:export :main :build :join :each :hardlink :symlink))
 
 (require :sb-posix)
 (require :uiop)
@@ -116,8 +116,7 @@ there, whether it's a file or another symlink."
 (defun filename-from-args (&optional (args sb-ext:*posix-argv*))
   "Parse filename from args."
   (unless (= (length args) 2)
-    (format t "Usage: bastard <path/to/config.lisp>~%")
-    (exit 1))
+    (error (format nil "Usage: bastard <path/to/config.lisp>~%")))
   (nth 1 args))
 
 (defun main (&optional filename)
@@ -129,6 +128,9 @@ Expects an argument to a file containing bastard lisp."
 		  (execute-file filename)
 		  (exit 0))
     (error (e)
-      (format t "Error: ~A~%" e)
+      (apply #'format `(t "Error: ~A~%" ,e))
       (exit 1))))
 
+(defun build (path-to-executable)
+  (let ((*real-exits* 't))
+    (sb-ext:save-lisp-and-die (abspath path-to-executable) :toplevel #'main :executable t)))

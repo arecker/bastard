@@ -1,6 +1,6 @@
 (defpackage bastard
   (:use :cl)
-  (:export :main :build :join :each :hardlink :symlink))
+  (:export :main :build :join :each :hardlink :symlink :git :folder :is-linux))
 
 (require :sb-posix)
 (require :uiop)
@@ -43,8 +43,8 @@ stderr."
 another."
   (let ((src (abspath src))
 	(dest (abspath dest)))
-  (equal (sb-posix:stat-ino (sb-posix:stat src))
-	 (sb-posix:stat-ino (sb-posix:stat dest)))))
+    (equal (sb-posix:stat-ino (sb-posix:stat src))
+	   (sb-posix:stat-ino (sb-posix:stat dest)))))
 
 (defun hardlink (src dest)
   "Creates a hardlink from pathspec SRC to DEST.  
@@ -52,7 +52,7 @@ Overwrites DEST if already linking to another file."
   (let* ((src (abspath src))
 	 (dest (abspath dest))
 	 (info-msg (format nil "~A -> ~A"  src dest))
-	 (symbol "HL"))
+	 (symbol "HDL"))
     (cond ((not (probe-file src))
 	   (let ((error-msg (format nil "~A does not exist" src)))
 	     (report symbol :error info-msg error-msg)))
@@ -89,7 +89,7 @@ there, whether it's a file or another symlink."
   (let* ((src (abspath src))
 	 (dest (abspath dest))
 	 (info-msg (format nil "~A -> ~A"  src dest))
-	 (symbol "SL"))
+	 (symbol "SYM"))
     (cond ((not (probe-file src))
 	   (let ((error-msg (format nil "~A does not exist" src)))
 	     (report symbol :error info-msg error-msg)))
@@ -102,6 +102,45 @@ there, whether it's a file or another symlink."
 	   (delete-file dest)
 	   (sb-posix:symlink src dest)
 	   (report symbol :changed info-msg)))))
+
+(defun git-cloned-p (src dest)
+  "Return T if DEST is a git clone of SRC."
+  (declare (ignore src))
+  (and (probe-file dest)		;TODO: this just runs git status
+       (= 0 (getf (shell-out (format nil "git -C ~A status" dest)) :exit))))
+
+(defun git (src dest)
+  "Clone a git repo."
+  (let ((dest (abspath dest))
+	(info-msg (format nil "~A -> ~A"  src dest))
+	(symbol "GIT"))
+    (cond ((git-cloned-p src dest)
+	   (report symbol :up-to-date info-msg))
+	  ((not (probe-file dest))
+	   (shell-out (format nil "git clone ~A ~A" src dest))
+	   (report symbol :changed info-msg))
+	  (t (report symbol :error info-msg (format nil "~A already exists" dest))))))
+
+(defun folder-p (target)
+  "Return T if TARGET is a folder."
+  (and (probe-file target)
+       (directory target)))
+
+(defun is-linux ()
+  "Return T if running on linux."
+  (equal "Linux" (software-type)))
+
+(defun folder (dest)
+  "Create a folder."
+  (let ((dest (abspath dest))
+	(symbol "DIR"))
+    (cond ((folder-p dest)
+	   (report symbol :up-to-date dest))
+	  ((probe-file dest)
+	   (report symbol :error dest "already exists as file"))
+	  (t
+	   (ensure-directories-exist (pathname (format nil "~A/" dest)))
+	   (report symbol :changed dest)))))
 
 (defun collect-forms (filename)
   "Collect all the forms from a lisp file."

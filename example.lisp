@@ -1,7 +1,9 @@
 ;; DIRECTORIES
-(when (bastard:is-linux)
-  (dolist (target '("bin" "desktop" "docs" "downloads" "music" "pics" "src"))
-    (bastard:folder (bastard:join "~/" target))))
+(let ((folders (if (bastard:is-linux)
+		'("bin" "desktop" "docs" "downloads" "music" "pics" "src")
+		'("bin" "Desktop" "Documents" "Downloads" "Music" "Pictures" "src"))))
+  (dolist (folder folders)
+    (bastard:folder (bastard:join "~/" folder))))
 (dolist (target '("~/.ssh/"))
   (bastard:folder target))
 

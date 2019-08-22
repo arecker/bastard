@@ -9,9 +9,8 @@
 
 ;; CONFIGS
 (bastard:hardlink "configs/ansible/ansible.cfg" "~/.ansible.cfg")
-(bastard:hardlink "configs/bash/bashrc.sh" (if (bastard:is-linux)
-						"~/.bashrc"
-						".profile"))
+(bastard:hardlink "configs/bash/bashrc.sh" "~/.bashrc")
+(bastard:hardlink "configs/bash/profile.sh" "~/.profile")
 (bastard:hardlink "configs/lisp/sbclrc.lisp" "~/.sbclrc")
 (bastard:hardlink "configs/ruby/gemrc" "~/.gemrc")
 (bastard:hardlink "configs/git/config" "~/.gitconfig")

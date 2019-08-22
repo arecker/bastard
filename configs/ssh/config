@@ -1,5 +1,9 @@
 Include work/config
 
+Host bedroom
+  User alex
+  ForwardX11 yes
+
 Host *
   ForwardAgent yes
   StrictHostKeyChecking no

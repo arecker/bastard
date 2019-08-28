@@ -1,12 +1,18 @@
 Include work/config
 
 Host bedroom
+  Hostname bedroom.local
   User alex
   ForwardX11 yes
 
 Host diningroom
+  Hostname diningroom.local
   User recker
   ForwardX11 yes
+
+Host archive
+  Hostname archive.local
+  User alex
 
 Host *
   ForwardAgent yes

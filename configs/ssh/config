@@ -4,6 +4,10 @@ Host bedroom
   User alex
   ForwardX11 yes
 
+Host diningroom
+  User recker
+  ForwardX11 yes
+
 Host *
   ForwardAgent yes
   StrictHostKeyChecking no

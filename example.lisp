@@ -45,3 +45,6 @@
 (bastard:git "https://github.com/rbenv/rbenv.git" "~/.rbenv")
 (bastard:folder "~/.rbenv/cache")
 (bastard:git "https://github.com/rbenv/ruby-build.git" "~/.rbenv/plugins/ruby-build")
+
+;; GO
+(bastard:git "https://github.com/syndbg/goenv.git" "~/.goenv")

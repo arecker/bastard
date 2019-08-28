@@ -40,7 +40,7 @@ fi
 # goenv
 if [ -d "$HOME/.goenv" ]; then
     export GOENV_ROOT="$HOME/.goenv"
-    export GOPATH="$HOME"
+    export GOENV_GOPATH_PREFIX="$HOME/.go"
     export PATH="$GOENV_ROOT/bin:$PATH"
     eval "$(goenv init -)"
 fi

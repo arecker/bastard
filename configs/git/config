@@ -7,6 +7,3 @@
 
 [includeIf "gitdir:~/src/work/"]
   path = .gitconfig-work
-
-[includeIf "gitdir:~/src/github.com/zendesk/"]
-  path = .gitconfig-work

@@ -103,28 +103,26 @@ there, whether it's a file or another symlink."
 	   (sb-posix:symlink src dest)
 	   (report symbol :changed info-msg)))))
 
-(defun git-cloned-p (src dest)
-  "Return T if DEST is a git clone of SRC."
-  (declare (ignore src))
-  (and (probe-file dest)		;TODO: this just runs git status
-       (= 0 (getf (shell-out (format nil "git -C ~A status" dest)) :exit))))
+(defun folder-p (target)
+  "Return T if TARGET is a folder."
+  (and (probe-file target)
+       (not (pathname-name (probe-file target)))))
+
+(defun git-repo-p (dest)
+  "Return T if DEST is a git repo."
+  (not (null (folder-p (join dest ".git")))))
 
 (defun git (src dest)
   "Clone a git repo."
   (let ((dest (abspath dest))
 	(info-msg (format nil "~A -> ~A"  src dest))
 	(symbol "GIT"))
-    (cond ((git-cloned-p src dest)
+    (cond ((git-repo-p dest)
 	   (report symbol :up-to-date info-msg))
 	  ((not (probe-file dest))
 	   (shell-out (format nil "git clone ~A ~A" src dest))
 	   (report symbol :changed info-msg))
 	  (t (report symbol :error info-msg (format nil "~A already exists" dest))))))
-
-(defun folder-p (target)
-  "Return T if TARGET is a folder."
-  (and (probe-file target)
-       (directory target)))
 
 (defun is-linux ()
   "Return T if running on linux."

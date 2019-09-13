@@ -16,6 +16,17 @@ def pretty_number(number)
   number.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
 end
 
+def and_list(words)
+  last = words.pop
+  if words.empty?
+    last
+  elsif words.length == 1
+    "#{words.first} and #{last}"
+  else
+    words.join(', ') + ", and #{last}"
+  end
+end
+
 begin
   require 'org-ruby'
 rescue LoadError
@@ -60,10 +71,12 @@ end
 entries = headlines.map do |headline|
   logger.debug("parsing entry: #{headline.output_text}")
   date = Date.strptime(headline.output_text, '%Y-%m-%d %A')
+  date_slug = date.strftime('%Y-%m-%d')
   body_text = headline.body_lines.drop(1).collect(&:output_text).join(' ')
   {
+    date: date,
     title: date.strftime('%A, %B %-e %Y'),
-    filename: "#{date.strftime('%Y-%m-%d')}-entry.html",
+    filename: "#{date_slug}-#{date_slug}.html.html",
     body_txt: body_text,
     body_html: Orgmode::Parser.new(body_text).to_html,
     tags: headline.tags
@@ -90,7 +103,9 @@ class StatsTracker
         "#{k} (#{pretty_number(v)})"
       end,
       total_entries: pretty_number(@entries.length),
-      total_word_count: pretty_number(total_word_count)
+      total_word_count: pretty_number(total_word_count),
+      current_streak: pretty_number(entry_dates_grouped_by_streak[0].length),
+      longest_streak: pretty_number(longest_streak),
     )
   end
 
@@ -116,7 +131,21 @@ class StatsTracker
         counts[v] += 1
       end
     end
-    counts.sort_by { |_k, v| v }.reverse.take(3)
+    counts.sort_by { |k, v| [v, k] }.reverse.take(3)
+  end
+
+  def longest_streak
+    entry_dates_grouped_by_streak.map(&:length).max
+  end
+
+  def entry_dates_grouped_by_streak
+    entry_dates.slice_when do |prev, curr|
+      curr != prev - 1
+    end.to_a
+  end
+
+  def entry_dates
+    @entries.map { |e| e[:date] }.sort.reverse 
   end
 end
 
@@ -126,6 +155,7 @@ entries.each do |entry|
     ---
     title: #{entry[:title]}
     tags: [#{entry[:tags].join(',')}]
+    excerpt: #{and_list(entry[:tags].dup)}
     ---
     #{entry[:body_html]}
   CONTENT

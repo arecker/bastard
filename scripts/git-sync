@@ -38,7 +38,7 @@ def shell(cmd, suppress=False):
     if not suppress and code != 0:
         raise ShellCommandFailed
     return code
-    
+
 
 def main():
     args = get_args()
@@ -81,8 +81,12 @@ def main():
     try:
         shell('git push')
     except ShellCommandFailed:
-        logger.error('failed write push commit!')
-        sys.exit(1)
+        try:
+            logger.debug('failed push, trying rebase first')
+            shell('git rebase origin/master && git push')
+        except ShellCommandFailed:
+            logger.error('could not push, nor rebase!')
+            sys.exit(1)
 
     logger.info('finished!')
 

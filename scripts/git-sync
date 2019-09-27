@@ -69,7 +69,7 @@ def main():
         sys.exit(1)
 
     logger.info('writing commit')
-    message = 'git-commit-push: {}'.format(datetime.datetime.now())
+    message = 'git-sync: {}'.format(datetime.datetime.now())
     logger.debug('generated commit message: %s', message)
     try:
         shell('git commit -m "{}"'.format(message))
@@ -83,7 +83,9 @@ def main():
     except ShellCommandFailed:
         try:
             logger.debug('failed push, trying rebase first')
-            shell('git rebase origin/master && git push')
+            shell('git fetch --all --prune')
+            shell('git rebase origin/master')
+            shell('git push')
         except ShellCommandFailed:
             logger.error('could not push, nor rebase!')
             sys.exit(1)

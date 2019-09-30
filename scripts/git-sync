@@ -88,8 +88,14 @@ def main():
         logger.info('pushing commit')
         shell('git push')
     except ShellCommandFailed:
-        logger.error('could not push commit!')
-        sys.exit(1)
+        logger.info('failed to push, trying rebase')
+        try:
+            shell('git fetch --all --prune')
+            shell('git rebase origin/master')
+            shell('git push')
+        except ShellCommandFailed:
+            logger.error('failed to rebase + push!')
+            sys.exit(1)
 
     logger.info('finished!')
 

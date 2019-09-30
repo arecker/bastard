@@ -56,17 +56,16 @@ def main():
     logger.debug('moving to %s', path)
     os.chdir(path)
 
-    logger.info('rebasing')
-    try:
-        shell('git fetch --all --prune')
-        shell('git rebase origin/master')
-    except ShellCommandFailed:
-        logger.error('failed to rebase!')
-        sys.exit(1)
-
     logger.info('checking for changes')
     if shell('git diff --exit-code', suppress=True) == 0:
-        logger.info('no changes, exiting')
+        logger.info('no changes')
+        logger.info('rebasing')
+        try:
+            shell('git fetch --all --prune')
+            shell('git rebase origin/master')
+        except ShellCommandFailed:
+            logger.error('failed to rebase!')
+            sys.exit(1)
         sys.exit(0)
 
     logger.info('adding modifications')

@@ -16,8 +16,9 @@
 (bastard:hardlink "configs/git/config" "~/.gitconfig")
 (bastard:hardlink "configs/git/work" "~/.gitconfig-work")
 (bastard:hardlink "configs/ssh/config" "~/.ssh/config")
-(unless (bastard:is-linux)
-  (bastard:symlink "configs/blog/macos.yml" "~/.blog.yml"))
+(if (bastard:is-linux)
+    (bastard:symlink "configs/blog/linux.yml" "~/.blog.yml")
+    (bastard:symlink "configs/blog/macos.yml" "~/.blog.yml"))
 
 ;; SCRIPTS
 (dolist (script (bastard:each "scripts/*.sh"))

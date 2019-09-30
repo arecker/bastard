@@ -1,0 +1,14 @@
+---
+journal_path: ~/Documents/journal.org
+stats_path: ~/src/blog/_data/stats.json
+posts_dir: ~/src/blog/_posts/
+blog_repo: ~/src/blog
+bucket: blog-bucket-1edd2xs506ohe
+aws_access_key_id_cmd: pass reckerops/aws-access-key-id | tail -1
+aws_secret_access_key_cmd: pass reckerops/aws-secret-access-key | tail -1
+
+slacks:
+  -
+    channel: '#blog'
+    username: 'reckerbot'
+    webhook_cmd: pass slack/reckerfamily/webhook | tail -1

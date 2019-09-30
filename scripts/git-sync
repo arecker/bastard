@@ -56,6 +56,14 @@ def main():
     logger.debug('moving to %s', path)
     os.chdir(path)
 
+    logger.info('rebasing')
+    try:
+        shell('git fetch --all --prune')
+        shell('git rebase origin/master')
+    except ShellCommandFailed:
+        logger.error('failed to rebase!')
+        sys.exit(1)
+
     logger.info('checking for changes')
     if shell('git diff --exit-code', suppress=True) == 0:
         logger.info('no changes, exiting')
@@ -77,18 +85,12 @@ def main():
         logger.error('failed write commit modifications!')
         sys.exit(1)
 
-    logger.info('pushing commit')
     try:
+        logger.info('pushing commit')
         shell('git push')
     except ShellCommandFailed:
-        try:
-            logger.debug('failed push, trying rebase first')
-            shell('git fetch --all --prune')
-            shell('git rebase origin/master')
-            shell('git push')
-        except ShellCommandFailed:
-            logger.error('could not push, nor rebase!')
-            sys.exit(1)
+        logger.error('could not push commit!')
+        sys.exit(1)
 
     logger.info('finished!')
 

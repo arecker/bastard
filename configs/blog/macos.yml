@@ -9,6 +9,6 @@ aws_secret_access_key_cmd: pass reckerops/aws-secret-access-key | tail -1
 
 slacks:
   -
-    channel: '@alex'
+    channel: '#blog'
     username: 'reckerbot'
     webhook_cmd: pass slack/reckerfamily/webhook | tail -1

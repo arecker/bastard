@@ -1,5 +1,4 @@
 export EDITOR="nano"
-export PATH="$HOME/bin:$PATH"
 export PS1="\u@\h:\w\$ "
 
 # aliases
@@ -61,3 +60,5 @@ fi
 if [ "$(uname)" == "Darwin" ]; then
     export PATH="/usr/local/sbin:$PATH"
 fi
+
+export PATH="$HOME/bin:$PATH"

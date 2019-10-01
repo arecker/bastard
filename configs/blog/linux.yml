@@ -7,6 +7,12 @@ bucket: blog-bucket-1edd2xs506ohe
 aws_access_key_id_cmd: pass reckerops/aws-access-key-id | tail -1
 aws_secret_access_key_cmd: pass reckerops/aws-secret-access-key | tail -1
 
+twitter:
+  access_token_secret_cmd: pass twitter/reckerbot/access-token-secret
+  access_token_cmd: pass twitter/reckerbot/access-token
+  consumer_api_key_cmd: pass twitter/reckerbot/consumer-api-key
+  consumer_api_secret_cmd: pass twitter/reckerbot/consumer-api-secret-key
+
 slacks:
   -
     channel: '#blog'

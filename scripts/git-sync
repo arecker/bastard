@@ -61,8 +61,8 @@ def main():
         logger.info('no changes')
         logger.info('rebasing')
         try:
-            shell('git fetch --all --prune')
-            shell('git rebase origin/master')
+            shell('git fetch --all --prune >/dev/null')
+            shell('git rebase origin/master >/dev/null')
         except ShellCommandFailed:
             logger.error('failed to rebase!')
             sys.exit(1)
@@ -70,7 +70,7 @@ def main():
 
     logger.info('adding modifications')
     try:
-        shell('git add -A')
+        shell('git add -A > /dev/null')
     except ShellCommandFailed:
         logger.error('failed to add modifications!')
         sys.exit(1)
@@ -79,20 +79,20 @@ def main():
     message = 'git-sync: {}'.format(datetime.datetime.now())
     logger.debug('generated commit message: %s', message)
     try:
-        shell('git commit -m "{}"'.format(message))
+        shell('git commit -m "{}" > /dev/null'.format(message))
     except ShellCommandFailed:
         logger.error('failed write commit modifications!')
         sys.exit(1)
 
     try:
         logger.info('pushing commit')
-        shell('git push')
+        shell('git push > /dev/null')
     except ShellCommandFailed:
         logger.info('failed to push, trying rebase')
         try:
-            shell('git fetch --all --prune')
-            shell('git rebase origin/master')
-            shell('git push')
+            shell('git fetch --all --prune > /dev/null')
+            shell('git rebase origin/master > /dev/null')
+            shell('git push > /dev/null')
         except ShellCommandFailed:
             logger.error('failed to rebase + push!')
             sys.exit(1)

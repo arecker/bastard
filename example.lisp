@@ -31,8 +31,7 @@
   (bastard:git (format nil "git@github.com:arecker/~A" repo) (bastard:join "~/src/" repo)))
 
 ;; other
-(dolist (repo '(("emacs.d.git" "~/.emacs.d")
-		("public" "~/public")))
+(dolist (repo '(("emacs.d.git" "~/.emacs.d")))
   (let ((src (format nil "git@github.com:arecker/~A.git" (first repo)))
 	(dest (second repo)))
     (bastard:git src dest)))

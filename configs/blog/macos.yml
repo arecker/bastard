@@ -18,3 +18,7 @@ slacks:
     channel: '#blog'
     username: 'reckerbot'
     webhook_cmd: pass slack/reckerfamily/webhook | tail -1
+  -
+    channel: '#blog'
+    username: 'reckerbot'
+    webhook_cmd: pass slack/redalenfamily/webhook | tail -1

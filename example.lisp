@@ -8,11 +8,11 @@
   (bastard:folder target))
 
 ;; CONFIGS
-(bastard:hardlink "configs/ansible/ansible.cfg" "~/.ansible.cfg")
-(bastard:hardlink "configs/bash/bashrc.sh" "~/.bashrc")
-(bastard:hardlink "configs/bash/profile.sh" "~/.profile")
-(bastard:hardlink "configs/lisp/sbclrc.lisp" "~/.sbclrc")
-(bastard:hardlink "configs/ruby/gemrc" "~/.gemrc")
+(bastard:symlink "configs/ansible/ansible.cfg" "~/.ansible.cfg")
+(bastard:symlink "configs/bash/bashrc.sh" "~/.bashrc")
+(bastard:symlink "configs/bash/profile.sh" "~/.profile")
+(bastard:symlink "configs/lisp/sbclrc.lisp" "~/.sbclrc")
+(bastard:symlink "configs/ruby/gemrc" "~/.gemrc")
 (bastard:hardlink "configs/git/config" "~/.gitconfig")
 (bastard:hardlink "configs/git/work" "~/.gitconfig-work")
 (bastard:hardlink "configs/ssh/config" "~/.ssh/config")
